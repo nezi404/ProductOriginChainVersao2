@@ -1,88 +1,61 @@
-from flask import Flask, render_template, request, jsonify
-from blockchain import Blockchain
-from product_data import ProductData
+import json
+import streamlit as st
+from services.blockchain import Blockchain
+from services.product_data import ProductData
+from components.register_product import RegisterProduct
+from components.verify_product import VerifyProduct
+from components.product_history import ProductsHistory
+from components.sidebar import Sidebar
 import hashlib
 from datetime import datetime
 import os
-from werkzeug.utils import secure_filename
+from PIL import Image
+import qrcode
+import base64
+import io
+import uuid
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max-limit
+# Configuração da página
+st.set_page_config(
+    page_title="Blockchain de autenticidade de produtos eletrônicos",
+    page_icon="🔒",
+    layout="wide"
+)
 
-# Criar diretório de uploads se não existir
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# Inicialização da blockchain (usando session_state para persistir entre reruns)
+if 'blockchain' not in st.session_state:
+    st.session_state.blockchain = Blockchain(difficulty=4)
 
-# Inicializar a blockchain
-blockchain = Blockchain(difficulty=4)
+# Estado para controlar qual aba está ativa
+if 'tab' not in st.session_state:
+    st.session_state.tab = "registro"
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'bmp'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def hash_fingerprint_image(image_data):
+def hash_product_qrcode_image(image):
     """
     Gera um hash da imagem da impressão digital
     """
-    return hashlib.sha256(image_data).hexdigest()
+    return hashlib.sha256(image).hexdigest()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+# Título principal
+st.title("🔒 Blockchain de Autenticidade de Produtos")
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'fingerprint' not in request.files:
-        return jsonify({'error': 'Nenhum arquivo enviado'}), 400
-    
-    file = request.files['fingerprint']
-    person_id = request.form.get('person_id', '')
-    
-    if file.filename == '':
-        return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
-    
-    if not allowed_file(file.filename):
-        return jsonify({'error': 'Tipo de arquivo não permitido'}), 400
-    
-    if not person_id:
-        return jsonify({'error': 'ID da pessoa é obrigatório'}), 400
-    
-    try:
-        # Ler os dados da imagem
-        image_data = file.read()
-        
-        # Gerar hash da imagem
-        fingerprint_hash = hash_fingerprint_image(image_data)
-        
-        # Criar dados biométricos
-        biometric_data = ProductData(
-            fingerprint_hash=fingerprint_hash,
-            person_id=person_id,
-            capture_date=datetime.now().isoformat(),
-            quality_score=95  # Em um caso real, isso seria calculado baseado na qualidade da imagem
-        )
-        
-        # Adicionar à blockchain
-        new_block = blockchain.new_block(biometric_data)
-        blockchain.add_block(new_block)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Impressão digital registrada com sucesso',
-            'block_index': new_block.index,
-            'hash': new_block.hash
-        })
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+# Tabs para navegação
+tabs = ["Registro", "Autenticação", "Blockchain"]
+selected_tab = st.radio("Selecione uma opção:", tabs, horizontal=True)
 
-@app.route('/blockchain')
-def get_blockchain():
-    return jsonify({
-        'blocks': [str(block) for block in blockchain.blocks],
-        'is_valid': blockchain.is_blockchain_valid()
-    })
+if selected_tab == "Registro":
+    register_page = RegisterProduct()
+    register_page.render()
 
-if __name__ == '__main__':
-    app.run(debug=True) 
+elif selected_tab == "Autenticação":
+    verify_page = VerifyProduct()
+    verify_page.render()
+
+elif selected_tab == "Blockchain":
+    history_page = ProductsHistory()
+    history_page.render()
+
+# Sidebar com informações adicionais
+with st.sidebar:
+    sidebar = Sidebar()
+    sidebar.render()

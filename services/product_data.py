@@ -3,7 +3,8 @@ import json
 from datetime import datetime
 
 class ProductData:
-    def __init__(self, 
+    def __init__(self,
+                 product_id,
                  product_name,
                  batch_number,
                  manufacture_date,
@@ -21,6 +22,7 @@ class ProductData:
             :param brief_description: Breve descrição do produto
             :param capture_date: Data de registro na blockchain
             """
+            self.product_id = product_id
             self.product_name = product_name
             self.batch_number = batch_number
             self.manufacture_date = manufacture_date

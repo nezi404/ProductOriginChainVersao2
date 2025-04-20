@@ -3,7 +3,7 @@
 import hashlib
 import time
 import json
-from product_data import ProductData
+from services.product_data import ProductData
 
 class Block:
     def __init__(self, index, timestamp, previous_hash, data):

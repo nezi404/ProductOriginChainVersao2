@@ -1,6 +1,6 @@
 # blockchain.py
 # Classe que representa a Blockchain
-from block_class import Block
+from services.block_class import Block
 
 import time
 
