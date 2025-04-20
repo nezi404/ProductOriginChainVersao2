@@ -1,5 +1,5 @@
 from blockchain import Blockchain
-from biometric_data import BiometricData
+from product_data import ProductData
 import hashlib
 from datetime import datetime
 
@@ -22,7 +22,7 @@ def main():
     fingerprint_hash = hash_fingerprint_image(fingerprint_image_data)
     
     # Criar dados biométricos
-    biometric_data = BiometricData(
+    biometric_data = ProductData(
         fingerprint_hash=fingerprint_hash,
         person_id="P123456",
         capture_date=datetime.now().isoformat(),

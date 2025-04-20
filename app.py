@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from blockchain import Blockchain
-from biometric_data import BiometricData
+from product_data import ProductData
 import hashlib
 from datetime import datetime
 import os
@@ -56,7 +56,7 @@ def upload_file():
         fingerprint_hash = hash_fingerprint_image(image_data)
         
         # Criar dados biométricos
-        biometric_data = BiometricData(
+        biometric_data = ProductData(
             fingerprint_hash=fingerprint_hash,
             person_id=person_id,
             capture_date=datetime.now().isoformat(),

@@ -3,7 +3,7 @@
 import hashlib
 import time
 import json
-from biometric_data import BiometricData
+from product_data import ProductData
 
 class Block:
     def __init__(self, index, timestamp, previous_hash, data):
@@ -12,7 +12,7 @@ class Block:
         :param index: Índice do bloco na blockchain
         :param timestamp: Timestamp de criação do bloco
         :param previous_hash: Hash do bloco anterior
-        :param data: Dados armazenados no bloco (pode ser string ou BiometricData)
+        :param data: Dados armazenados no bloco (pode ser string ou ProductData)
         """
         self.index = index
         self.timestamp = timestamp
@@ -25,8 +25,8 @@ class Block:
         """
         Calcula o hash do bloco utilizando SHA-256
         """
-        # Converte os dados para string JSON se for BiometricData
-        if isinstance(self.data, BiometricData):
+        # Converte os dados para string JSON se for ProductData
+        if isinstance(self.data, ProductData):
             data_str = self.data.to_json()
         else:
             data_str = str(self.data)
@@ -48,5 +48,5 @@ class Block:
         """
         Retorna a representação textual do bloco
         """
-        data_str = self.data.to_json() if isinstance(self.data, BiometricData) else str(self.data)
+        data_str = self.data.to_json() if isinstance(self.data, ProductData) else str(self.data)
         return f"Block #{self.index} [previousHash: {self.previous_hash}, timestamp: {time.ctime(self.timestamp)}, data: {data_str}, hash: {self.hash}]"
