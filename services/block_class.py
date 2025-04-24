@@ -43,6 +43,50 @@ class Block:
         while not self.hash.startswith(target):
             self.nonce += 1
             self.hash = self.calculate_hash()
+
+    def to_dict(self):
+        print("funcao dict", self.data)
+        if self.previous_hash == None:
+            print("igual none")
+            return  {
+                "index": self.index,
+                "timestamp": self.timestamp,
+                "previous_hash": self.previous_hash,
+                "Data": self.data,
+                "nonce": self.nonce,
+                "hash": self.hash
+            }
+        else:
+            return {
+                "index": self.index,
+                "timestamp": self.timestamp,
+                "previous_hash": self.previous_hash,
+                "Data": self.data,
+                "nonce": self.nonce,
+                "hash": self.hash
+            }
+    
+    def to_json(self):
+        print("funcao jsonnn", self.data)
+        if self.index != 0:
+            data =  {
+                "index": self.index,
+                "timestamp": self.timestamp,
+                "previous_hash": self.previous_hash,
+                "Data": self.to_dict(),
+                "nonce": self.nonce,
+                "hash": self.hash
+            }
+        else:
+            data = {
+                "index": self.index,
+                "timestamp": self.timestamp,
+                "previous_hash": self.previous_hash,
+                "Data": self.data,
+                "nonce": self.nonce,
+                "hash": self.hash
+            }
+        return json.dumps(data)
     
     def __str__(self):
         """

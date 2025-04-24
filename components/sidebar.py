@@ -1,13 +1,6 @@
-import json
 import streamlit as st
-import hashlib
-from datetime import datetime
-import os
-from PIL import Image
-import qrcode
-import base64
-import io
-import uuid
+
+
 
 class Sidebar:
     def __init__(self):
@@ -17,18 +10,18 @@ class Sidebar:
         st.header("Informações")
         st.markdown("""
         ### Sobre o Sistema
-        Este sistema utiliza blockchain para armazenar hashes de impressões digitais de forma segura e imutável.
+        Este sistema utiliza blockchain para armazenar hashes de informações de produtos para garantir a sua autenticidade.
         
         ### Características
-        - Armazenamento apenas de hashes (não das imagens originais)
+        - Armazenamento apenas de hashes e suas informações
         - Validação de integridade da blockchain
         - Interface interativa e responsiva
-        - Autenticação biométrica segura
+        - Autenticação de produtos manualmente e via QR Code 
         
         ### Como usar
-        1. **Registro**: Cadastre uma nova impressão digital
-        2. **Autenticação**: Verifique a identidade com impressão digital
-        3. **Blockchain**: Explore todos os blocos registrados
+        1. **Registro**: Cadastre um produto inserindo suas informações
+        2. **Autenticação**: Verifique a autenticidade com seu nome e número de identificação ou com o uso do QR Code
+        3. **Blockchain**: Explore todos os blocos registrados na blockchain
         """)
         
         # Estatísticas da blockchain
