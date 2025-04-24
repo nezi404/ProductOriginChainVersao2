@@ -1,13 +1,5 @@
-import json
 import streamlit as st
-import hashlib
 from datetime import datetime
-import os
-from PIL import Image
-import qrcode
-import base64
-import io
-import uuid
 
 class Sidebar:
     def __init__(self):
@@ -17,18 +9,18 @@ class Sidebar:
         st.header("Informações")
         st.markdown("""
         ### Sobre o Sistema
-        Este sistema utiliza blockchain para armazenar hashes de impressões digitais de forma segura e imutável.
+        O **ProductsOriginChain** é uma aplicação que utiliza tecnologia blockchain para ajudar empresas e consumidores a garantir a **autenticidade de produtos**. Através de um QR Code gerado no momento do registro, qualquer pessoa pode verificar se um produto foi de fato registrado por uma empresa autorizada.
         
         ### Características
-        - Armazenamento apenas de hashes (não das imagens originais)
-        - Validação de integridade da blockchain
-        - Interface interativa e responsiva
-        - Autenticação biométrica segura
+        - Registros imutáveis e descentralizados usando blockchain
+        - Geração de QR Code para verificação rápida
+        - Apenas empresas autorizadas podem registrar produtos
+        - Interface simples e intuitiva feita com Streamlit
         
         ### Como usar
-        1. **Registro**: Cadastre uma nova impressão digital
-        2. **Autenticação**: Verifique a identidade com impressão digital
-        3. **Blockchain**: Explore todos os blocos registrados
+        1. **Empresas**: Acesse a aba "Registrar Produto", preencha os dados e gere o QR Code.
+        2. **Consumidores**: Acesse a aba "Verificar Produto" e escaneie ou digite o código do QR Code.
+        3. **Blockchain**: Explore os blocos de produtos registrados e valide a integridade da cadeia.
         """)
         
         # Estatísticas da blockchain
