@@ -1,6 +1,4 @@
-import hashlib
 import json
-from datetime import datetime
 
 class ProductData:
     def __init__(self,
@@ -14,6 +12,7 @@ class ProductData:
                  capture_date):
             """
             Inicializa os dados do produto
+            ::param product_id: Numero identificador do produto
             :param product_name: Nome do produto
             :param batch_number: Número do lote
             :param manufacture_date: Data de fabricação
@@ -35,7 +34,17 @@ class ProductData:
         """
         Converte os dados para JSON
         """
-        return json.dumps(self.__dict__)
+        data = {
+            "product_id" : self.product_id,
+            "product_name" : self.product_name,
+            "batch_number" : self.batch_number,
+            "manufacture_date" : self.manufacture_date,
+            "manufacturer" : self.manufacturer,
+            "manufacturing_location" : self.manufacturing_location,
+            "brief_description" : self.brief_description,
+            "capture_date" : self.capture_date
+        }
+        return json.dumps(data)
     
     @staticmethod
     def from_json(json_str):
@@ -44,3 +53,18 @@ class ProductData:
         """
         data = json.loads(json_str)
         return ProductData(**data)
+
+    def to_dict(self):
+        data ={
+            'product_id': self.product_id,
+            'product_name': self.product_name,
+            'batch_number': self.batch_number,
+            'manufacture_date': self.manufacture_date,
+            'manufacturer': self.manufacturer,
+            'manufacturing_location': self.manufacturing_location,
+            'brief_description': self.brief_description,
+            'capture_date': self.capture_date
+        }
+        return(data)
+
+    

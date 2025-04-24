@@ -29,6 +29,6 @@ class ProductsHistory:
                     **Hash Anterior:** `{block.previous_hash}`  
                     **Timestamp:** {datetime.fromtimestamp(block.timestamp).strftime('%Y-%m-%d %H:%M:%S')}  
                     **Hash:** `{block.hash}`  
-                    **Dados:** {block.data}
+                    **Dados:** {block.to_json()}
                     """)
                     st.markdown("---")

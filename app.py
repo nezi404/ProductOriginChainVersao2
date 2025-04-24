@@ -6,56 +6,50 @@ from components.register_product import RegisterProduct
 from components.verify_product import VerifyProduct
 from components.product_history import ProductsHistory
 from components.sidebar import Sidebar
-import hashlib
 from datetime import datetime
-import os
 from PIL import Image
-import qrcode
-import base64
-import io
-import uuid
 
-# Configuração da página
-st.set_page_config(
-    page_title="Blockchain de autenticidade de produtos eletrônicos",
-    page_icon="🔒",
-    layout="wide"
-)
 
-# Inicialização da blockchain (usando session_state para persistir entre reruns)
-if 'blockchain' not in st.session_state:
-    st.session_state.blockchain = Blockchain(difficulty=4)
+class App:
 
-# Estado para controlar qual aba está ativa
-if 'tab' not in st.session_state:
-    st.session_state.tab = "registro"
+    def run():
+        # Configuração da página
+        st.set_page_config(
+            page_title="Blockchain de autenticidade de produtos eletrônicos",
+            page_icon="🔒",
+            layout="wide"
+        )
 
-def hash_product_qrcode_image(image):
-    """
-    Gera um hash da imagem da impressão digital
-    """
-    return hashlib.sha256(image).hexdigest()
+        # Inicialização da blockchain (usando session_state para persistir entre reruns)
+        if 'blockchain' not in st.session_state:
+            st.session_state.blockchain = Blockchain(difficulty=4)
 
-# Título principal
-st.title("🔒 Blockchain de Autenticidade de Produtos")
+        # Estado para controlar qual aba está ativa
+        if 'tab' not in st.session_state:
+            st.session_state.tab = "registro"
 
-# Tabs para navegação
-tabs = ["Registro", "Autenticação", "Blockchain"]
-selected_tab = st.radio("Selecione uma opção:", tabs, horizontal=True)
+        # Título principal
+        st.title("🔒 Blockchain de Autenticidade de Produtos")
 
-if selected_tab == "Registro":
-    register_page = RegisterProduct()
-    register_page.render()
+        # Tabs para navegação
+        tabs = ["Registro", "Autenticação", "Blockchain"]
+        selected_tab = st.radio("Selecione uma opção:", tabs, horizontal=True)
 
-elif selected_tab == "Autenticação":
-    verify_page = VerifyProduct()
-    verify_page.render()
+        if selected_tab == "Registro":
+            register_page = RegisterProduct()
+            register_page.render()
 
-elif selected_tab == "Blockchain":
-    history_page = ProductsHistory()
-    history_page.render()
+        elif selected_tab == "Autenticação":
+            verify_page = VerifyProduct()
+            verify_page.render()
 
-# Sidebar com informações adicionais
-with st.sidebar:
-    sidebar = Sidebar()
-    sidebar.render()
+        elif selected_tab == "Blockchain":
+            history_page = ProductsHistory()
+            history_page.render()
+
+        # Sidebar com informações adicionais
+        with st.sidebar:
+            sidebar = Sidebar()
+            sidebar.render()
+
+App.run()
