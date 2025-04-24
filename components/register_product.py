@@ -11,30 +11,21 @@ import uuid
 class RegisterProduct:
     def __init__(self):
         pass
-
     def process_product(self, product_id,
                         product_name,
                         batch_number,
                         manufacture_date, 
                         manufacturer,
                         manufacturing_location,
-                        brief_description
+                        brief_description,
+                        capture_date
                         ):
         """
-        Processa a imagem da impressão digital e adiciona à blockchain
+        Processa os dados do produto e adiciona à blockchain
         """
         try:
-            # # Converter a imagem para bytes
-            # img_byte_arr = io.BytesIO()
-            # image.save(img_byte_arr, format=image.format)
-            # img_byte_arr = img_byte_arr.getvalue()
-            
-            # # Gerar hash da imagem
-            # fingerprint_hash = hash_fingerprint_image(img_byte_arr)
-            
-            # Criar dados biométricos
+
             product_data = ProductData(
-                # fingerprint_hash=fingerprint_hash,
                 product_id = product_id,
                 product_name =  product_name,
                 batch_number = batch_number,
@@ -42,8 +33,8 @@ class RegisterProduct:
                 manufacturer = manufacturer,
                 manufacturing_location = manufacturing_location,
                 brief_description = brief_description,
-                capture_date=datetime.now().isoformat(),
-                # quality_score=95  # Em um caso real, isso seria calculado baseado na qualidade da imagem
+                capture_date=capture_date,
+                
             )
             
             # Adicionar à blockchain
@@ -54,15 +45,17 @@ class RegisterProduct:
         except Exception as e:
             return False, f"Erro ao processar produto: {str(e)}", None
 
-
     def generate_qrcode(self, data_dict):
+        self.product_id = data_dict["product_id"]
+        self.product_name = data_dict["product_name"]
+        self.batch_number = data_dict["batch_number"]
         data_str = json.dumps(data_dict, indent=2)
         qr = qrcode.make(data_str)
         buf = io.BytesIO()
         qr.save(buf, format='PNG')
         buf.seek(0)
         return buf
-
+    
     def render(self):
         st.header("Registrar Novo Produto")
 
@@ -93,24 +86,17 @@ class RegisterProduct:
                 manufacturer = st.text_input("Fabricante", key="manufacturer")
                 manufacturing_location = st.text_input("Local de fabricação", key="manufacturing_location")
                 brief_description = st.text_input("Descrição breve", key="brief_description")
-
+            
             submitted = st.form_submit_button("Registrar Produto", use_container_width=True)
-
-        # GERA IMAGEM DE TESTES
-        def generate_qrcode(data_dict):
-            data_str = json.dumps(data_dict, indent=2)
-            qr = qrcode.make(data_str)
-            buf = io.BytesIO()
-            qr.save(buf, format='PNG')
-            buf.seek(0)
-            return buf
+    
 
         if submitted:
             if not all([product_name, batch_number, manufacture_date, manufacturer, manufacturing_location, brief_description]):
                 st.error("Por favor, Preencha todos os campos")
             else:
+                capture_date = datetime.now().isoformat()
                 product_id = str(uuid.uuid4())[:16]  # gera um ID único de 8 caracteres
-
+            
                 success, message, block = self.process_product(
                     product_id,
                     product_name,
@@ -118,31 +104,28 @@ class RegisterProduct:
                     manufacture_date, 
                     manufacturer,
                     manufacturing_location,
-                    brief_description
+                    brief_description,
+                    capture_date
                     )
                 if success:
                     st.success(message)
                     # st.info(f"Hash do bloco: {block.hash}")
 
+                    qr_code_img = self.generate_qrcode({
+                        "product_id": product_id,
+                        "product_name": product_name,
+                        "batch_number": batch_number                        
+                    })
+                    
                     st.markdown(
                         f"""
                         <div style="text-align: center;">
                             <p style="font-size: 20px;">Código de verificação do produto: <strong>{product_id}</strong></p>
+                            <p style="font-size: 20px;">Nome de verificação do produto: <strong>{product_name}</strong></p>
                         </div>
                         """,
                         unsafe_allow_html=True
                     )
-
-                    qr_code_img = self.generate_qrcode({
-                        "product_id": product_id,
-                        "product_name": product_name,
-                        "batch_number": batch_number,
-                        "manufacture_date": manufacture_date,
-                        "manufacturer": manufacturer,
-                        "location": manufacturing_location,
-                        "description": brief_description,
-                        "block_hash": block.hash
-                    })
 
                     # Converta a imagem para base64
                     qr_code_base64 = base64.b64encode(qr_code_img.read()).decode("utf-8")

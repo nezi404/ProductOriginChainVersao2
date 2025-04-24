@@ -1,7 +1,6 @@
 # blockchain.py
 # Classe que representa a Blockchain
 from services.block_class import Block
-
 import time
 
 class Blockchain:
@@ -13,6 +12,7 @@ class Blockchain:
         self.difficulty = difficulty
         self.blocks = []
         self.create_genesis_block()
+        
     
     def create_genesis_block(self):
         """
@@ -34,7 +34,10 @@ class Blockchain:
         :param data: Dados que serão armazenados no bloco
         """
         latest_block = self.latest_block()
-        return Block(latest_block.index + 1, time.time(), latest_block.hash, data)    
+        print("Novo bloco", data.product_name)
+        print("Novo bloco", type(data))
+        return Block(latest_block.index + 1, time.time(), latest_block.hash, data.to_dict())    
+       
    
     def add_block(self, block):
         """
@@ -79,8 +82,28 @@ class Blockchain:
         
         return True
     
+    def find_block(self, b):
+        
+        if  len(self.blocks) == 1:
+            print("Nenhum produto registrado")
+            return False, False
+
+        for i in range(1, len(self.blocks)):
+    
+            if b['product_id'] == self.blocks[i].data["product_id"]  and b['product_name'] == self.blocks[i].data["product_name"] and b['batch_number'] == self.blocks[i].data["batch_number"]: 
+                print("produto achado")
+                return True, self.blocks[i]
+            else:
+                print("produto nao achado")
+        
+        return False, False
+    
     def __str__(self):
         """
         Retorna a representação textual de toda a blockchain
         """
         return '\n'.join(str(block) for block in self.blocks)
+    
+    
+
+        
