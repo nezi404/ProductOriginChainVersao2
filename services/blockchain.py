@@ -83,14 +83,27 @@ class Blockchain:
         return True
     
     def find_block(self, b):
-        
+        """
+        Procura por um bloco específico na blockchain com base em:
+        - product_id
+        - product_name
+        - batch_number
+
+        :param b: Dicionário com os dados do produto a ser verificado
+        :return: (True, bloco encontrado) ou (False, False) se não encontrado
+        """
         if  len(self.blocks) == 1:
             print("Nenhum produto registrado")
             return False, False
 
         for i in range(1, len(self.blocks)):
-    
-            if b['product_id'] == self.blocks[i].data["product_id"]  and b['product_name'] == self.blocks[i].data["product_name"] and b['batch_number'] == self.blocks[i].data["batch_number"]: 
+            block_data = self.blocks[i].data
+            
+            if (
+                b['product_id'] == block_data["product_id"] and
+                b['product_name'] == block_data["product_name"] and
+                b['batch_number'] == block_data["batch_number"]
+            ):
                 print("produto achado")
                 return True, self.blocks[i]
             else:
