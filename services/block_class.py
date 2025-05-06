@@ -6,7 +6,7 @@ import json
 from services.product_data import ProductData
 
 class Block:
-    def __init__(self, index, timestamp, previous_hash, data):
+    def __init__(self, index, timestamp, previous_hash, data, nonce=0):
         """
         Inicializa um bloco com os atributos necessários
         :param index: Índice do bloco na blockchain
@@ -18,7 +18,7 @@ class Block:
         self.timestamp = timestamp
         self.previous_hash = previous_hash
         self.data = data
-        self.nonce = 0
+        self.nonce = nonce
         self.hash = self.calculate_hash()
     
     def calculate_hash(self):
@@ -45,7 +45,7 @@ class Block:
             self.hash = self.calculate_hash()
 
     def to_dict(self):
-        print("funcao dict", self.data)
+        print("funcao dict aaa", self.data)
         if self.previous_hash == None:
             print("igual none")
             return  {
@@ -57,24 +57,63 @@ class Block:
                 "hash": self.hash
             }
         else:
+            print("funcao dict aaa", self.data.to_dict())
+
             return {
                 "index": self.index,
                 "timestamp": self.timestamp,
                 "previous_hash": self.previous_hash,
-                "Data": self.data,
+                "Data": self.data.to_dict(),
                 "nonce": self.nonce,
                 "hash": self.hash
             }
     
+    @staticmethod
+    def from_dict(data):
+        print("ABAXACI")
+        print(data)
+        prod_data = data
+        
+        if prod_data["index"] > 0:
+            print("nao é o bloco genesisi")
+            print(prod_data["Data"])
+        
+            prod = ProductData(
+                            prod_data["Data"]["product_id"],
+                            prod_data["Data"]["product_name"],
+                            prod_data["Data"]["batch_number"],
+                            prod_data["Data"]["manufacture_date"], 
+                            prod_data["Data"]["manufacturer"],
+                            prod_data["Data"]["manufacturing_location"],
+                            prod_data["Data"]["brief_description"],
+                            prod_data["Data"]["capture_date"])
+            return Block(data["index"], data["timestamp"], data["previous_hash"],prod, data["nonce"])
+        else:
+            return Block(data["index"], data["timestamp"], data["previous_hash"], None, data["nonce"])
+            
     def to_json(self):
-        return {
-            "index": self.index,
-            "timestamp": self.timestamp,
-            "data": self.data.__dict__ if hasattr(self.data, "__dict__") else self.data,
-            "previous_hash": self.previous_hash,
-            "hash": self.hash,
-            "nonce": self.nonce
-        }
+        print("funcao jsonnn", self.data)
+        print("o index é", self.index)
+        if self.index != 0:
+            print("funcao jsonnn comdata", self.data)
+            data =  {
+                "index": self.index,
+                "timestamp": self.timestamp,
+                "previous_hash": self.previous_hash,
+                "data": self.data.to_dict(),
+                "nonce": self.nonce,
+                "hash": self.hash
+            }
+        else:
+            data = {
+                "index": self.index,
+                "timestamp": self.timestamp,
+                "previous_hash": self.previous_hash,
+                "data": self.data,
+                "nonce": self.nonce,
+                "hash": self.hash
+            }
+        return json.dumps(data)
     
     def __str__(self):
         """

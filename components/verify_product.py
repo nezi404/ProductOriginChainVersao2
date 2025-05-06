@@ -137,13 +137,13 @@ class VerifyProduct:
                             # Mostrar detalhes do registro
                             st.subheader("Detalhes do Registro")
                             st.info(f"""
-                            **Nome do Produto:** {matching_block.data["product_name"]}  
-                            **Número do Lote:** {matching_block.data["batch_number"]}  
-                            **Data de Fabricação:** {matching_block.data["manufacture_date"]}  
-                            **Fabricante:** {matching_block.data["manufacturer"]}  
-                            **Local de Fabricação:** {matching_block.data["manufacturing_location"]}  
-                            **Descrição:** {matching_block.data["brief_description"]}  
-                            **Data de Registro:** {matching_block.data["capture_date"]}  
+                            **Nome do Produto:** {matching_block.data.product_name}  
+                            **Número do Lote:** {matching_block.data.batch_number}  
+                            **Data de Fabricação:** {matching_block.data.manufacture_date}  
+                            **Fabricante:** {matching_block.data.manufacturer}  
+                            **Local de Fabricação:** {matching_block.data.manufacturing_location}  
+                            **Descrição:** {matching_block.data.brief_description}  
+                            **Data de Registro:** {matching_block.data.capture_date}  
                             **Bloco:** #{matching_block.index}  
                             **Hash do Bloco:** {matching_block.hash[:20]}...
                             """)

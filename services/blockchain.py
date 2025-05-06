@@ -1,17 +1,22 @@
 # blockchain.py
 # Classe que representa a Blockchain
+import json
+from services.product_data import ProductData
 from services.block_class import Block
 import time
+from pathlib import Path
 
 class Blockchain:
-    def __init__(self, difficulty):
+    def __init__(self, difficulty, file_path="blockchain.json"):
         """
         Inicializa a blockchain com um bloco gênesis
         :param difficulty: Dificuldade da mineração (número de zeros iniciais exigidos no hash)
         """
         self.difficulty = difficulty
         self.blocks = []
-        self.create_genesis_block()
+        self.file_path = Path(file_path)
+        self.load_or_create()
+        
         
     
     def create_genesis_block(self):
@@ -21,6 +26,7 @@ class Blockchain:
         genesis_block = Block(0, time.time(), None, "Block gênesis")
         genesis_block.proof_of_work(self.difficulty)
         self.blocks.append(genesis_block)
+        self.save()
     
     def latest_block(self):
         """
@@ -35,8 +41,9 @@ class Blockchain:
         """
         latest_block = self.latest_block()
         print("Novo bloco", data.product_name)
+        print("Novo bloco eeeee", data.to_dict())
         print("Novo bloco", type(data))
-        return Block(latest_block.index + 1, time.time(), latest_block.hash, data.to_dict())    
+        return Block(latest_block.index + 1, time.time(), latest_block.hash, data)    
        
    
     def add_block(self, block):
@@ -46,6 +53,7 @@ class Blockchain:
         if block and self.is_valid_new_block(block, self.latest_block()):
             block.proof_of_work(self.difficulty)
             self.blocks.append(block)
+            self.save()
 
     
     def is_first_block_valid(self):
@@ -97,13 +105,7 @@ class Blockchain:
             return False, False
 
         for i in range(1, len(self.blocks)):
-            block_data = self.blocks[i].data
-            
-            if (
-                b['product_id'] == block_data["product_id"] and
-                b['product_name'] == block_data["product_name"] and
-                b['batch_number'] == block_data["batch_number"]
-            ):
+            if b['product_id'] == self.blocks[i].data.product_id  and b['product_name'] == self.blocks[i].data.product_name and b['batch_number'] == self.blocks[i].data.batch_number: 
                 print("produto achado")
                 return True, self.blocks[i]
             else:
@@ -117,6 +119,24 @@ class Blockchain:
         """
         return '\n'.join(str(block) for block in self.blocks)
     
+    def save_block(self, block):
+        b = json.dumps(block.to_dict())
+        # Writing to blockchain.json
+        with open("blockchain.json", "a") as outfile:
+            outfile.write(b)
     
+    def save(self):
+        with self.file_path.open('w') as f:
+            print("é na hora de salvarrrr")
+            json.dump([block.to_dict() for block in self.blocks], f, indent=2)
+
+    def load_or_create(self):
+        if self.file_path.exists():
+            with self.file_path.open() as f:
+                data = json.load(f)
+                self.blocks = [Block.from_dict(b) for b in data]
+        else:
+            self.create_genesis_block()
+
 
         

@@ -52,7 +52,15 @@ class ProductData:
         Cria uma instância de ProductData a partir de uma string JSON
         """
         data = json.loads(json_str)
-        return ProductData(**data)
+        return ProductData(
+                        data["product_id"],
+                        data["product_name"],
+                        data["batch_number"],
+                        data["manufacture_date"], 
+                        data["manufacturer"],
+                        data["manufacturing_location"],
+                        data["brief_description"],
+                        data["capture_date"])
 
     def to_dict(self):
         data ={
@@ -66,5 +74,5 @@ class ProductData:
             'capture_date': self.capture_date
         }
         return(data)
-
+    
     
