@@ -24,11 +24,32 @@ class ProductsHistory:
         
         with blockchain_container:
             for block in st.session_state.blockchain.blocks:
-                with st.expander(f"Bloco #{block.index}", expanded=True):
-                    st.markdown(f"""
-                    **Hash Anterior:** `{block.previous_hash}`  
-                    **Timestamp:** {datetime.fromtimestamp(block.timestamp).strftime('%Y-%m-%d %H:%M:%S')}  
-                    **Hash:** `{block.hash}`  
-                    **Dados:** {block.to_json()}
-                    """)
-                    st.markdown("---")
+
+                if block.index != 0:
+                    with st.expander(f"Bloco #{block.index}", expanded=True):
+                        st.markdown(f"""
+                        **Hash Anterior:** `{block.previous_hash}`  
+                        **Timestamp:** {datetime.fromtimestamp(block.timestamp).strftime('%Y-%m-%d %H:%M:%S')}  
+                        **Hash:** `{block.hash}`  
+                        **Dados:**
+                        **Nome do Produto:** `{block.data.product_name}`  
+                        **Número do Lote:** `{block.data.batch_number}`  
+                        **Data de Fabricação:** `{block.data.manufacture_date}`  
+                        **Fabricante:** `{block.data.manufacturer}`  
+                        **Local de Fabricação:** `{block.data.manufacturing_location}`  
+                        **Descrição:** `{block.data.brief_description}`
+                        **Data de Registro:** `{block.data.capture_date}`
+                        **Nonce:** `{block.nonce}`
+                        """)
+                        st.markdown("---")
+                else: 
+                    with st.expander(f"Bloco #{block.index}", expanded=True):
+                        st.markdown(f"""
+                        **Hash Anterior:** `{block.previous_hash}`  
+                        **Timestamp:** {datetime.fromtimestamp(block.timestamp).strftime('%Y-%m-%d %H:%M:%S')}  
+                        **Hash:** `{block.hash}`  
+                        **Dados:** `{block.data}`
+                        **Nonce:** `{block.nonce}`
+                        """)
+                        st.markdown("---")
+                    
