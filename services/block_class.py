@@ -67,26 +67,14 @@ class Block:
             }
     
     def to_json(self):
-        print("funcao jsonnn", self.data)
-        if self.index != 0:
-            data =  {
-                "index": self.index,
-                "timestamp": self.timestamp,
-                "previous_hash": self.previous_hash,
-                "Data": self.to_dict(),
-                "nonce": self.nonce,
-                "hash": self.hash
-            }
-        else:
-            data = {
-                "index": self.index,
-                "timestamp": self.timestamp,
-                "previous_hash": self.previous_hash,
-                "Data": self.data,
-                "nonce": self.nonce,
-                "hash": self.hash
-            }
-        return json.dumps(data)
+        return {
+            "index": self.index,
+            "timestamp": self.timestamp,
+            "data": self.data.__dict__ if hasattr(self.data, "__dict__") else self.data,
+            "previous_hash": self.previous_hash,
+            "hash": self.hash,
+            "nonce": self.nonce
+        }
     
     def __str__(self):
         """
