@@ -131,10 +131,5 @@ class Blockchain:
         else:
             self.create_genesis_block()
 
-    def tamper_block(self, index, block):
-        if 0 <= index < len(self.blocks):
-            self.blocks[index].Data = [ProductData(**block)]
-            self.blocks[index].hash = self.blocks[index].calculate_hash()
-            self.save()
 
         
