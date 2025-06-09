@@ -35,7 +35,7 @@ class App:
             # Endereço do contrato ProductsOriginChain
             st.contract_address = os.getenv("CONTRACT_ADDRESS")
             st.abi = '''
-                [
+[
 	{
 		"anonymous": false,
 		"inputs": [
@@ -233,9 +233,8 @@ class App:
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}
-]
-                     
-                    '''
+]                    
+'''
 
             st.session_state.contract = st.contract = st.w3.eth.contract(address=st.contract_address, abi=json.loads(st.abi))
 

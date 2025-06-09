@@ -1,4 +1,5 @@
 import ast
+from datetime import datetime
 import streamlit as st
 from PIL import Image
 import base64
@@ -50,7 +51,8 @@ class VerifyProduct:
         try:
             if image:
                 find = self.read_qrcode(image)
-                exists, block = st.contract.functions.getProduct(find.product_id + find.product_number + find.batch_number).call()
+                exists, product_id, product_name, batch_number, product_chain_id, manufacture_date, manufacturer, manufacturing_location, brief_description, capture_date = st.contract.functions.getProduct(find["product_id"] + find["product_name"] + find["batch_number"]).call()
+                block = [exists, product_id, product_name, batch_number, product_chain_id, manufacture_date, manufacturer, manufacturing_location, brief_description, capture_date]
 
                 if exists and block:
                     print("achado com sucesso")
@@ -127,21 +129,20 @@ class VerifyProduct:
                         
                         if is_match:
                             st.success("✅ Autenticação bem-sucedida!")
-                            print(matching_block.data)
+                            print(matching_block)
                             st.balloons()
                             
                             # Mostrar detalhes do registro
                             st.subheader("Detalhes do Registro")
                             st.info(f"""
-                            **Nome do Produto:** {matching_block.data.product_name}  
-                            **Número do Lote:** {matching_block.data.batch_number}  
-                            **Data de Fabricação:** {matching_block.data.manufacture_date}  
-                            **Fabricante:** {matching_block.data.manufacturer}  
-                            **Local de Fabricação:** {matching_block.data.manufacturing_location}  
-                            **Descrição:** {matching_block.data.brief_description}  
-                            **Data de Registro:** {matching_block.data.capture_date}  
-                            **Bloco:** #{matching_block.index}  
-                            **Hash do Bloco:** {matching_block.hash[:20]}...
+                            **Nome do Produto:** {matching_block[1]}  
+                            **Número do Lote:** {matching_block[2]}
+                            **ID do produto:** {matching_block[3]}
+                            **Data de Fabricação:** {matching_block[4]}  
+                            **Fabricante:** {matching_block[5]}  
+                            **Local de Fabricação:** {matching_block[6]}  
+                            **Descrição:** {matching_block[7]}  
+                            **Data de Registro:** {datetime.strptime(matching_block[8], "%Y-%m-%dT%H:%M:%S.%f").strftime("%d/%m/%Y %H:%M:%S")}   
                             """)
                         else:
                             st.error("❌ Autenticação falhou. Produto não encontrado para este ID.")

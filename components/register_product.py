@@ -43,7 +43,7 @@ class RegisterProduct:
                                             brief_description,
                                             capture_date).build_transaction({
                 'chainId': 11155111,  # Sepolia
-                'gas': 200000, #Quantidade máxima de gás que a transação pode consumir. Fixado em 200000 unidades, o que é mais do que suficiente para essa função simples.
+                'gas': 500000, #Quantidade máxima de gás que a transação pode consumir. Fixado em 200000 unidades, o que é mais do que suficiente para essa função simples.
                 'gasPrice': st.w3.to_wei('10', 'gwei'), #Define o preço do gás a ser pago por unidade. Convertido de 10 gwei para wei (menor unidade do ETH) usando w3.to_wei(...).
                 'nonce': nonce #Define o nonce, ou seja, o número de transações já enviadas pela conta. Garante que cada transação tenha um número único, necessário para ser aceita pela rede.
             })
@@ -55,12 +55,13 @@ class RegisterProduct:
 
             # Espera a transação ser minerada
             receipt = st.w3.eth.wait_for_transaction_receipt(tx_hash)
-
+            print(receipt.logs)
             # Lê os eventos emitidos na transação
             logs = st.contract.events.ProductRegistered().process_receipt(receipt)
 
             log2 = st.contract.events.Test().process_receipt(receipt)
             if log2:
+                product_values = logs[0]['args']
                 st.info(f"📡 Evento capturado: informações do produto armazenado foi  test`{product_values}`")
                 return True, "Registro realizado!"
             if not log2:
