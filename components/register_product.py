@@ -1,12 +1,16 @@
 import json
 import streamlit as st
-from services.product_data import ProductData
 from datetime import datetime
 from PIL import Image
+from web3 import Web3
 import qrcode
 import base64
 import io
 import uuid
+from dotenv import load_dotenv
+import os
+
+
 
 class RegisterProduct:
     def __init__(self):
@@ -20,31 +24,60 @@ class RegisterProduct:
                         brief_description,
                         capture_date
                         ):
+        product_chain_id = product_id + product_name + batch_number
         """
         Processa os dados do produto e adiciona à blockchain
         """
         try:
+            nonce = st.w3.eth.get_transaction_count(st.sender_address)
+            # Acessa a função store do contrato inteligente e prepara uma chamada com o parâmetro num (o número que o usuário digitou).
+            # Constrói a transação em formato de dicionário Python, com os dados necessários para enviá-la à rede Ethereum.
+            tx = st.contract.functions.register(
+                                            product_id,
+                                            product_name,
+                                            batch_number,
+                                            product_chain_id,
+                                            manufacture_date, 
+                                            manufacturer,
+                                            manufacturing_location,
+                                            brief_description,
+                                            capture_date).build_transaction({
+                'chainId': 11155111,  # Sepolia
+                'gas': 200000, #Quantidade máxima de gás que a transação pode consumir. Fixado em 200000 unidades, o que é mais do que suficiente para essa função simples.
+                'gasPrice': st.w3.to_wei('10', 'gwei'), #Define o preço do gás a ser pago por unidade. Convertido de 10 gwei para wei (menor unidade do ETH) usando w3.to_wei(...).
+                'nonce': nonce #Define o nonce, ou seja, o número de transações já enviadas pela conta. Garante que cada transação tenha um número único, necessário para ser aceita pela rede.
+            })
 
-            product_data = ProductData(
-                product_id = product_id,
-                product_name =  product_name,
-                batch_number = batch_number,
-                manufacture_date = manufacture_date, 
-                manufacturer = manufacturer,
-                manufacturing_location = manufacturing_location,
-                brief_description = brief_description,
-                capture_date=capture_date,
-                
-            )
-            
-            # Adicionar à blockchain
-            new_block = st.session_state.blockchain.new_block(product_data)
-            st.session_state.blockchain.add_block(new_block)
-            
-            return True, "Produto registrado com sucesso!", new_block
+            signed_tx = st.w3.eth.account.sign_transaction(tx, st.private_key)
+            tx_hash = st.w3.eth.send_raw_transaction(signed_tx.raw_transaction)
+
+            st.success(f"✅ Transação enviada com sucesso!\nHash: {tx_hash.hex()}")
+
+            # Espera a transação ser minerada
+            receipt = st.w3.eth.wait_for_transaction_receipt(tx_hash)
+
+            # Lê os eventos emitidos na transação
+            logs = st.contract.events.ProductRegistered().process_receipt(receipt)
+
+            log2 = st.contract.events.Test().process_receipt(receipt)
+            if log2:
+                st.info(f"📡 Evento capturado: informações do produto armazenado foi  test`{product_values}`")
+                return True, "Registro realizado!"
+            if not log2:
+                st.warning("⚠️ Nenhum evento TEst encontrado na transação.")
+                return False, f"Erro ao processar produto"
+        
+            if logs:
+                product_values = logs[0]['args']
+                st.info(f"📡 Evento capturado: informações do produto armazenado foi `{product_values}`")
+                return True, "Registro realizado!"
+            else:
+                st.warning("⚠️ Nenhum evento ProductRegistered encontrado na transação.")
+                return False, f"Erro ao processar produto"
         except Exception as e:
-            return False, f"Erro ao processar produto: {str(e)}", None
-
+            st.error(f"Erro ao enviar transação: {str(e)}")
+            return False, f"Erro ao processar produto: {str(e)}"
+       
     def generate_qrcode(self, data_dict):
         self.product_id = data_dict["product_id"]
         self.product_name = data_dict["product_name"]
@@ -79,7 +112,7 @@ class RegisterProduct:
             with col1:
                 product_name = st.text_input("Nome do produto", key="product_name")
                 batch_number = st.text_input("Número do lote", key="batch_number")
-                manufacture_date = st.text_input("Data de fabricação", key="manufacture_date")
+                manufacture_date = str(st.date_input("Data de fabricação", key="manufacture_date", value=None, format="DD/MM/YYYY", max_value="today"))
 
             # Preenchendo a segunda coluna com os campos
             with col2:
@@ -97,8 +130,8 @@ class RegisterProduct:
                 capture_date = datetime.now().isoformat()
                 product_id = str(uuid.uuid4())[:16]  # gera um ID único de 8 caracteres
             
-                success, message, block = self.process_product(
-                    product_id,
+                success, message = self.process_product(
+                    str(product_id),
                     product_name,
                     batch_number,
                     manufacture_date, 

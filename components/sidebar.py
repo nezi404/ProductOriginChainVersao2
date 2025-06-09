@@ -23,6 +23,3 @@ class Sidebar:
         3. **Blockchain**: Explore os blocos de produtos registrados e valide a integridade da cadeia.
         """)
         
-        # Estatísticas da blockchain
-        st.metric("Total de Blocos", len(st.session_state.blockchain.blocks))
-        st.metric("Dificuldade de Mineração", st.session_state.blockchain.difficulty) 

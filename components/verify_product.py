@@ -1,6 +1,5 @@
 import ast
 import streamlit as st
-from services.product_data import ProductData
 from PIL import Image
 import base64
 import io
@@ -51,20 +50,17 @@ class VerifyProduct:
         try:
             if image:
                 find = self.read_qrcode(image)
-                exists, block = st.session_state.blockchain.find_block(find)
+                exists, block = st.contract.functions.getProduct(find.product_id + find.product_number + find.batch_number).call()
 
                 if exists and block:
                     print("achado com sucesso")
                     return True, block
                 
             if product_id and product_name and batch_number:
-                find = {
-                    "product_id": product_id,
-                    "product_name": product_name,
-                    "batch_number": batch_number
-                }
-                exists, block = st.session_state.blockchain.find_block(find)
-                
+                find = product_id + product_name + batch_number
+
+                exists, product_id, product_name, batch_number, product_chain_id, manufacture_date, manufacturer, manufacturing_location, brief_description, capture_date = st.contract.functions.getProduct(find).call()
+                block = [product_id, product_name, batch_number, product_chain_id, manufacture_date, manufacturer, manufacturing_location, brief_description, capture_date]
                 if exists and block:
                     print("achado com sucesso")
                     return True, block
