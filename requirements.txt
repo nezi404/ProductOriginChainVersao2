@@ -1,0 +1,14 @@
+<<<<<<< HEAD
+flask==2.0.1
+werkzeug==2.0.1
+streamlit==1.32.0
+pillow==10.2.0 
+pyzbar==0.1.9
+=======
+flask==2.0.1
+werkzeug==2.0.1
+streamlit==1.32.0
+pillow==10.2.0 
+pyzbar==0.1.9
+>>>>>>> ee643ce142a5558f619c15a4550d3385dea529b2
+qrcode==8.1
